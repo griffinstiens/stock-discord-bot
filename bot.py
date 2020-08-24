@@ -4,8 +4,6 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from decouple import config
 
-print("Test")
-
 load_dotenv()
 TOKEN = config('DISCORD_TOKEN')
 DISCORD_SERVER_NAME = config('DISCORD_NAME')
