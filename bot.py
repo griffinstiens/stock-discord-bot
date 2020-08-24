@@ -53,5 +53,4 @@ async def grab_stonks(ctx):
 #             raise
 
 
-
 bot.run(TOKEN)
