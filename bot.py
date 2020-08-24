@@ -4,15 +4,23 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from decouple import config
 
+print("Test")
+
 load_dotenv()
 TOKEN = config('DISCORD_TOKEN')
 DISCORD_SERVER_NAME = config('DISCORD_NAME')
 
 bot = commands.Bot(command_prefix='!')
 
+def log_file_write(text, file="stdout.log"):
+    f = open(file, "a")
+    f.write(text)
+    f.close()
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
+    log_file_write(f'{bot.user.name} has connected to Discord!')
 
 @bot.event
 async def on_member_join(member):
@@ -44,13 +52,13 @@ async def grab_stonks(ctx):
 
 
 
-# @bot.event
-# async def on_error(event, *args, **kwargs):
-#     with open('err.log', 'a') as f:
-#         if event == 'on_message':
-#             f.write(f'Unhandled message: {args[0]}\n')
-#         else:
-#             raise
-       
+@bot.event
+async def on_error(event, *args, **kwargs):
+    with open('err.log', 'a') as f:
+        if event == 'on_message':
+            f.write(f'Unhandled message: {args[0]}\n')
+        else:
+            raise
+
 
 bot.run(TOKEN)

@@ -1,0 +1,3 @@
+discord
+python-dotenv
+python-decouple
