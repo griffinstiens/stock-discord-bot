@@ -51,6 +51,6 @@ async def grab_stonks(ctx):
 #             f.write(f'Unhandled message: {args[0]}\n')
 #         else:
 #             raise
-       
+
 
 bot.run(TOKEN)

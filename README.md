@@ -8,3 +8,30 @@ Creating a discord bot that will have the following features (and more potential
 `!stonks watchlist most_recent`
 - `most_recent` can pull the most recently backed up data from the database - What we can then do is provide another parameter that can display, say the last 15 back ups and you can pick which one you want to view
 - Potential for more detail - Using Pandas, NumPy and Matplotlib we can write a cron job that will every 2 weeks (or whatever) back up all of the data for a specific user into a CSV. Then what I can do is use my Jupyter notebook code I already have, and maybe once a month that watchlist will return a report with a graph that shows you how particular tickers have been doing over time.
+
+
+## Docker Commands
+ - Build the docker image
+```
+ docker build -t stock-discord-bot .
+```
+- Remove the build image
+```
+docker rm stock-discord-bot
+```
+- Run the image in a container
+```
+docker run --name=stock-discord-bot -e PYTHONUNBUFFERED=0 -d stock-discord-bot
+```
+- Stop the container
+```
+docker stop stock-discord-bot
+```
+- List containers running
+```
+docker ps
+```
+- Follow output of container (haven't been able to get this to work -DC)
+```
+docker logs --follow stock-discord-bot
+```
