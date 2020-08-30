@@ -1,16 +1,20 @@
 import os
-
 from discord.ext import commands
 from dotenv import load_dotenv
 from decouple import config
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
-import datetime
+import finnhub
+import requests
 
 load_dotenv()
 TOKEN = config('DISCORD_TOKEN')
 DISCORD_SERVER_NAME = config('DISCORD_NAME')
+FINN_API_KEY = config('FINN_KEY')
+
+# Setup Finnhub client
+finnhub_client = finnhub.Client(api_key=FINN_API_KEY)
 
 bot = commands.Bot(command_prefix='!')
 
@@ -25,43 +29,44 @@ async def on_member_join(member):
         f'Sup {member.name}...little bitch'
     )
 
-# @bot.event
-# async def on_message(message):
-#     if message.author == client.user:
-#         return
-
-    # stonk_response = 'we aint ready yet bruv'
-
-    # if message.content == '!stonks':
-    #     response = stonk_response
-    #     await message.channel.send(response)
-    # elif message.content == 'raise-exception':
-    #     raise discord.DiscordException
-
 # !stonk [ticker] - open, close data
 @bot.command(name='stonk')
-async def grab_stonk_history(ctx, ticker: str):
+async def grab_stonk_history(ctx, ticker: str, price = None):
     # user will pass ticker name
     # need a check to make sure it exists
-    data = yf.download({ticker}, start="2020-08-01")
-    if data.empty == True:
-        response = "That ticker doesn't exist --- Please enter a valid ticker symbol"
-        await ctx.channel.send(response)
-        return
-    data_info = data.info()
 
-    open_cost = data.Open
-    close_cost = data.Close
+    query = {'symbol': ticker, 'token': FINN_API_KEY}
+    res = requests.get('https://finnhub.io/api/v1/quote', params=query)
 
-    await ctx.send(open_cost)
+    output = res.json()
 
-# @bot.event
-# async def on_error(event, *args, **kwargs):
-#     with open('err.log', 'a') as f:
-#         if event == 'on_message':
-#             f.write(f'Unhandled message: {args[0]}\n')
-#         else:
-#             raise
+    if output == {}:
+        await ctx.send("Ticker not found - Please try again")
+    
+    currentPrice = str(output['c'])
+    openPrice = str(output['o'])
+    prevClose = str(output['pc'])
+    highPrice = str(output['h'])
+    lowPrice = str(output['l'])
+
+    if price == None:
+        msg = f'Current Price: {currentPrice}\nOpen: {openPrice}\nPrevious Close: {prevClose}\nHigh: {highPrice}\nLow: {lowPrice}'
+        await ctx.send("Loading...")
+        await ctx.send(msg)
+    elif price == 'current':
+        print(ticker)
+        await ctx.send("Current Price: " + str(output['c']))
+    elif price == 'open':
+        await ctx.send("Open Price: " + str(output['o']))
+    elif price == 'close':
+        await ctx.send("Previous Close Price: " + str(output['pc']))
+    elif price == 'high':
+        await ctx.send("Today's High: " + str(output['h']))
+    elif price == 'low':
+        await ctx.send("Today's Low: " + str(output['l']))
+    else:
+        await ctx.send(output)
+
 
 
 bot.run(TOKEN)

@@ -1,3 +1,4 @@
 discord
 python-dotenv
 python-decouple
+finnhub-python
