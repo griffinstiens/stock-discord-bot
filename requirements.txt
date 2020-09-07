@@ -2,3 +2,4 @@ discord
 python-dotenv
 python-decouple
 finnhub-python
+websocket_client
